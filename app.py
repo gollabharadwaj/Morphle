@@ -1,31 +1,36 @@
 from flask import Flask
 import os
-from datetime import datetime
 import subprocess
+from datetime import datetime
+import pytz
 
 app = Flask(__name__)
 
 @app.route('/htop')
 def htop():
-    name = "Golla Bharadwaj"
-    username = os.getlogin()
-    server_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S IST')
-    
-    top_output = subprocess.getoutput("top -bn1")
 
-    # Get the dynamically assigned port
-    port = os.getenv('PORT', 5000)
+    full_name = "Bharadwaj Golla"
 
-    page_content = f"""
-    <h1>Server Information</h1>
-    <p><b>Name:</b> {name}</p>
-    <p><b>Username:</b> {username}</p>
+  
+    username = os.getenv("USER") or os.getlogin()
+
+ 
+    ist = pytz.timezone('Asia/Kolkata')
+    server_time = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S.%f')
+
+
+    top_output = subprocess.getoutput("top -bn 1")
+
+ 
+    response = f"""
+    <p><b>Name:</b> {full_name}</p>
+    <p><b>user:</b> {username}</p>
     <p><b>Server Time (IST):</b> {server_time}</p>
-    <p><b>Running on Port:</b> {port}</p>
-    <pre>{top_output}</pre>
+    <pre><Strong>TOP OUTPUT:</Strong>\n\n{top_output}</pre>
+
     """
-    return page_content
+    return response
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+  
+    app.run(host='0.0.0.0', port=5000)
